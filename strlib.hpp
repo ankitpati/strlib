@@ -77,7 +77,7 @@ char *cString::strinstr(char *hay, char *ned)
     size_t pos, nlen, i;
     for(nlen=0; ned[nlen]; ++nlen);
     if(!nlen) return NULL;
-    for(i=0; hay[i] && i<nlen; ++i)
+    for(i=0; hay[i] && i<nlen; ++i);
     if(i!=nlen) return NULL;
     for(pos=0; hay[pos+nlen-1]; ++pos){
         for(i=0; i<nlen && (hay+pos)[i]==ned[i]; ++i);

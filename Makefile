@@ -38,6 +38,7 @@ $(EXECUTABLE): $(OBJECTS)
 clean:
 	@echo Cleaning...
 	rm -rf *o
+	strip $(EXECUTABLE)
 
 done:
 	@echo Done!
