@@ -27,13 +27,12 @@
 #include <iostream>
 #include <new>
 #include <cstdlib>
-#include <cctype>
+#include <cstring>
 
 class cString{
     char *str;
     size_t len;
-    char *srealloc(char *, size_t, size_t) throw(std::bad_alloc),
-         *strinstr(char *, char *);
+    char *srealloc(char *, size_t, size_t) throw(std::bad_alloc);
     void snull();
 public:
     cString(), cString(const cString &), cString(char *), cString(int),
@@ -73,20 +72,6 @@ char *cString::srealloc(char *s, size_t n, size_t m) throw(std::bad_alloc)
     return dst;
 }
 
-char *cString::strinstr(char *hay, char *ned)
-{
-    size_t pos, nlen, i;
-    for(nlen=0; ned[nlen]; ++nlen);
-    if(!nlen) return NULL;
-    for(i=0; hay[i] && i<nlen; ++i);
-    if(i!=nlen) return NULL;
-    for(pos=0; hay[pos+nlen-1]; ++pos){
-        for(i=0; i<nlen && (hay+pos)[i]==ned[i]; ++i);
-        if(i==nlen) return hay+pos;
-    }
-    return NULL;
-}
-
 void cString::snull()
 {
     if(str) delete []str;
@@ -102,27 +87,22 @@ cString::cString()
 
 cString::cString(const cString &ob)
 {
-    char *cpys, *cpyd;
     str=NULL;
     len=0;
     if(!ob.str) return;
     len=ob.len;
     str=srealloc(str, len+1, ob.len+1);
-    cpys=ob.str;
-    cpyd=str;
-    while((*cpyd++=*cpys++));
+    ::strcpy(str, ob.str);
 }
 
 cString::cString(char *s)
 {
-    char *cpy;
     str=NULL;
     len=0;
     if(!s) return;
-    for(len=0; s[len]; ++len);
+    len=::strlen(s);
     str=srealloc(str, len+1, len+1);
-    cpy=str;
-    while((*cpy++=*s++));
+    ::strcpy(str, s);
 }
 
 cString::cString(int num)
@@ -239,8 +219,8 @@ cString cString::operator-(int num)
 cString &cString::operator-=(const cString &ob)
 {
     char *occd, *occs;
-    if(!str || !ob.str || len<ob.len) return *this;
-    if((occd=strinstr(str+len-ob.len, ob.str))){
+    if(!str || !ob.str || len<ob.len || !*ob.str) return *this;
+    if((occd=::strstr(str+len-ob.len, ob.str))){
         occs=occd+ob.len;
         while((*occd++=*occs++));
         len-=ob.len;
@@ -282,8 +262,8 @@ cString cString::operator/(int num)
 cString &cString::operator/=(const cString &ob)
 {
     char *occd, *occs;
-    if(!str || !ob.str) return *this;
-    while((occd=strinstr(str, ob.str))){
+    if(!str || !ob.str || !*ob.str) return *this;
+    while((occd=::strstr(str, ob.str))){
         occs=occd+ob.len;
         while((*occd++=*occs++));
         len-=ob.len;
@@ -469,15 +449,8 @@ char *cString::extract() throw(std::bad_alloc)
 
 int cString::atoi()
 {
-    size_t i;
-    int sign, ret;
-    for(i=0; isspace(str[i]); ++i);
-    sign=(str[i]=='-')?-1:1;
-    if(str[i]=='-' || str[i]=='+') ++i;
-    for(ret=0; isdigit(str[i]) || isspace(str[i]) || str[i]==','; ++i)
-        if(isdigit(str[i]))
-            ret = ret*10 + (str[i]-'0');
-    return sign*ret;
+    if(!str) return 0;
+    return ::atoi(str);
 }
 
 std::istream &operator>>(std::istream &fin, cString &ob)
