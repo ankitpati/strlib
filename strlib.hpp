@@ -54,7 +54,8 @@ public:
          operator> (const cString &), operator> (char *), operator> (int),
          operator! ();
     void operator~ ();
-    char &at(size_t), *extract() throw(std::bad_alloc);
+    char &operator[](size_t),
+         *extract() throw(std::bad_alloc);
     int atoi();
     friend std::istream &operator>>(std::istream &fin , const cString &ob);
     friend std::ostream &operator<<(std::ostream &fout, const cString &ob);
@@ -448,7 +449,7 @@ cString &cString::revstr()
     return *this;
 }
 
-char &cString::at(size_t ind)
+char &cString::operator[](size_t ind)
 {
     static char enull;
     if(ind<len) return str[ind];
