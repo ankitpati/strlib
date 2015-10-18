@@ -37,9 +37,9 @@ int main()
     cin>>cst1>>cst2;
     cout<<"Enter an integer: ";
     cin>>tmp;
-    num=tmp.atoi();
+    num=(int)tmp;
     tmp=cst1;
-    ext=cst2.extract();
+    ext=(char *)cst2;
     cout<<endl
         <<"Parameters"<<endl
         <<"String 1   : "<<cst1<<endl

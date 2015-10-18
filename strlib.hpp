@@ -32,11 +32,19 @@
 class cString{
     char *str;
     size_t len;
-    char *srealloc(char *, size_t, size_t) throw(std::bad_alloc);
-    void snull();
+    void srealloc(size_t) throw(std::bad_alloc);
 public:
     cString(), cString(const cString &), cString(char *), cString(int),
-    ~cString();
+    ~cString(), operator char *() throw(std::bad_alloc), operator int();
+    void  operator~ ();
+    char &operator[](size_t);
+    bool operator==(const cString &), operator==(char *), operator==(int),
+         operator!=(const cString &), operator!=(char *), operator!=(int),
+         operator<=(const cString &), operator<=(char *), operator<=(int),
+         operator>=(const cString &), operator>=(char *), operator>=(int),
+         operator< (const cString &), operator< (char *), operator< (int),
+         operator> (const cString &), operator> (char *), operator> (int),
+         operator! ();
     cString &operator =(const cString &), &operator =(char *), &operator =(int),
              operator+ (const cString &),  operator+ (char *),  operator+ (int),
             &operator+=(const cString &), &operator+=(char *), &operator+=(int),
@@ -45,38 +53,20 @@ public:
              operator/ (const cString &),  operator/ (char *),  operator/ (int),
             &operator/=(const cString &), &operator/=(char *), &operator/=(int),
             &getstr(std::istream &, int, size_t), &revstr();
-    bool operator==(const cString &), operator==(char *), operator==(int),
-         operator!=(const cString &), operator!=(char *), operator!=(int),
-         operator<=(const cString &), operator<=(char *), operator<=(int),
-         operator>=(const cString &), operator>=(char *), operator>=(int),
-         operator< (const cString &), operator< (char *), operator< (int),
-         operator> (const cString &), operator> (char *), operator> (int),
-         operator! ();
-    void operator~ ();
-    char &operator[](size_t),
-         *extract() throw(std::bad_alloc);
-    int atoi();
     friend std::istream &operator>>(std::istream &fin , const cString &ob);
     friend std::ostream &operator<<(std::ostream &fout, const cString &ob);
 };
 
-char *cString::srealloc(char *s, size_t n, size_t m) throw(std::bad_alloc)
+void cString::srealloc(size_t m) throw(std::bad_alloc)
 {
     size_t i;
     char *dst;
     dst=new char[m];
-    if(s && n){
-        for(i=0; i<n && i<m; ++i) dst[i]=s[i];
-        delete []s;
+    if(str && len+1){
+        for(i=0; i<len+1 && i<m; ++i) dst[i]=str[i];
+        delete []str;
     }
-    return dst;
-}
-
-void cString::snull()
-{
-    if(str) delete []str;
-    str=NULL;
-    len=0;
+    str=dst;
 }
 
 cString::cString()
@@ -91,7 +81,7 @@ cString::cString(const cString &ob)
     len=0;
     if(!ob.str) return;
     len=ob.len;
-    str=srealloc(str, len+1, ob.len+1);
+    srealloc(ob.len+1);
     ::strcpy(str, ob.str);
 }
 
@@ -101,7 +91,7 @@ cString::cString(char *s)
     len=0;
     if(!s) return;
     len=::strlen(s);
-    str=srealloc(str, len+1, len+1);
+    srealloc(len+1);
     ::strcpy(str, s);
 }
 
@@ -112,7 +102,7 @@ cString::cString(int num)
     str=NULL;
     len=0;
     if(num<0){
-        str=srealloc(str, len+1, len+2);
+        srealloc(len+2);
         str[len++]='-';
         str[len]='\0';
         num=-num;
@@ -120,7 +110,7 @@ cString::cString(int num)
     }
     else i=j=0;
     do{
-        str=srealloc(str, len+1, len+2);
+        srealloc(len+2);
         str[len++]='0'+num%10;
         ++j;
     } while(num/=10);
@@ -138,150 +128,35 @@ cString::~cString()
     if(str) delete []str;
 }
 
-cString &cString::operator=(const cString &ob)
+cString::operator char *() throw(std::bad_alloc)
 {
-    snull();
-    return *this+=ob;
-}
-
-cString &cString::operator=(char *s)
-{
-    snull();
-    return *this+=s;
-}
-
-cString &cString::operator=(int num)
-{
-    snull();
-    return *this+=num;
-}
-
-cString cString::operator+(const cString &ob)
-{
-    cString ret(*this);
-    return ret+=ob;
-}
-
-cString cString::operator+(char *s)
-{
-    cString ret(*this);
-    return ret+=s;
-}
-
-cString cString::operator+(int num)
-{
-    cString ret(*this);
-    return ret+=num;
-}
-
-cString &cString::operator+=(const cString &ob)
-{
-    char *cpys, *cpyd;
-    if(!ob.str) return *this;
-    str=srealloc(str, len+1, len+ob.len+1);
-    cpys=ob.str;
-    cpyd=str+len;
+    char *cpys, *cpyd, *ret;
+    if(!str) return NULL;
+    ret=new char[len+1];
+    cpys=str;
+    cpyd=ret;
     while((*cpyd++=*cpys++));
-    len+=ob.len;
-    return *this;
+    return ret;
 }
 
-cString &cString::operator+=(char *s)
+cString::operator int()
 {
-    cString tmp(s);
-    return *this+=tmp;
+    if(!str) return 0;
+    return ::atoi(str);
 }
 
-cString &cString::operator+=(int num)
+void cString::operator~()
 {
-    cString tmp(num);
-    return *this+=tmp;
+    if(str) delete []str;
+    str=NULL;
+    len=0;
 }
 
-cString cString::operator-(const cString &ob)
+char &cString::operator[](size_t ind)
 {
-    cString ret(*this);
-    return ret-=ob;
-}
-
-cString cString::operator-(char *s)
-{
-    cString ret(*this);
-    return ret-=s;
-}
-
-cString cString::operator-(int num)
-{
-    cString ret(*this);
-    return ret-=num;
-}
-
-cString &cString::operator-=(const cString &ob)
-{
-    char *occd, *occs;
-    if(!str || !ob.str || len<ob.len || !*ob.str) return *this;
-    if((occd=::strstr(str+len-ob.len, ob.str))){
-        occs=occd+ob.len;
-        while((*occd++=*occs++));
-        len-=ob.len;
-        str=srealloc(str, len+1, len+1);
-    }
-    return *this;
-}
-
-cString &cString::operator-=(char *s)
-{
-    cString tmp(s);
-    return *this-=tmp;
-}
-
-cString &cString::operator-=(int num)
-{
-    cString tmp(num);
-    return *this-=tmp;
-}
-
-cString cString::operator/(const cString &ob)
-{
-    cString ret(*this);
-    return ret/=ob;
-}
-
-cString cString::operator/(char *s)
-{
-    cString ret(*this);
-    return ret/=s;
-}
-
-cString cString::operator/(int num)
-{
-    cString ret(*this);
-    return ret/=num;
-}
-
-cString &cString::operator/=(const cString &ob)
-{
-    char *occd, *occs;
-    if(!str || !ob.str || !*ob.str) return *this;
-    while((occd=::strstr(str, ob.str))){
-        occs=occd+ob.len;
-        while((*occd++=*occs++));
-        len-=ob.len;
-        str=srealloc(str, len+1, len+1);
-    }
-    return *this;
-}
-
-cString &cString::operator/=(char *s)
-{
-    cString tmp(s);
-    return *this/=tmp;
-}
-
-cString &cString::operator/=(int num)
-{
-    cString tmp(num);
-    return *this/=tmp;
+    static char enull;
+    if(ind<len) return str[ind];
+    return enull='\0';
 }
 
 bool cString::operator==(const cString &ob)
@@ -401,18 +276,159 @@ bool cString::operator!()
     return str?false:true;
 }
 
-void cString::operator~()
+cString &cString::operator=(const cString &ob)
 {
-    snull();
+    ~*this;
+    return *this+=ob;
+}
+
+cString &cString::operator=(char *s)
+{
+    ~*this;
+    return *this+=s;
+}
+
+cString &cString::operator=(int num)
+{
+    ~*this;
+    return *this+=num;
+}
+
+cString cString::operator+(const cString &ob)
+{
+    cString ret(*this);
+    return ret+=ob;
+}
+
+cString cString::operator+(char *s)
+{
+    cString ret(*this);
+    return ret+=s;
+}
+
+cString cString::operator+(int num)
+{
+    cString ret(*this);
+    return ret+=num;
+}
+
+cString &cString::operator+=(const cString &ob)
+{
+    char *cpys, *cpyd;
+    if(!ob.str) return *this;
+    srealloc(len+ob.len+1);
+    cpys=ob.str;
+    cpyd=str+len;
+    while((*cpyd++=*cpys++));
+    len+=ob.len;
+    return *this;
+}
+
+cString &cString::operator+=(char *s)
+{
+    cString tmp(s);
+    return *this+=tmp;
+}
+
+cString &cString::operator+=(int num)
+{
+    cString tmp(num);
+    return *this+=tmp;
+}
+
+cString cString::operator-(const cString &ob)
+{
+    cString ret(*this);
+    return ret-=ob;
+}
+
+cString cString::operator-(char *s)
+{
+    cString ret(*this);
+    return ret-=s;
+}
+
+cString cString::operator-(int num)
+{
+    cString ret(*this);
+    return ret-=num;
+}
+
+cString &cString::operator-=(const cString &ob)
+{
+    char *occd, *occs;
+    if(!str || !ob.str || len<ob.len || !*ob.str) return *this;
+    if((occd=::strstr(str+len-ob.len, ob.str))){
+        occs=occd+ob.len;
+        while((*occd++=*occs++));
+        len-=ob.len;
+        srealloc(len+1);
+    }
+    return *this;
+}
+
+cString &cString::operator-=(char *s)
+{
+    cString tmp(s);
+    return *this-=tmp;
+}
+
+cString &cString::operator-=(int num)
+{
+    cString tmp(num);
+    return *this-=tmp;
+}
+
+cString cString::operator/(const cString &ob)
+{
+    cString ret(*this);
+    return ret/=ob;
+}
+
+cString cString::operator/(char *s)
+{
+    cString ret(*this);
+    return ret/=s;
+}
+
+cString cString::operator/(int num)
+{
+    cString ret(*this);
+    return ret/=num;
+}
+
+cString &cString::operator/=(const cString &ob)
+{
+    char *occd, *occs;
+    if(!str || !ob.str || !*ob.str) return *this;
+    while((occd=::strstr(str, ob.str))){
+        occs=occd+ob.len;
+        while((*occd++=*occs++));
+        len-=ob.len;
+        srealloc(len+1);
+    }
+    return *this;
+}
+
+cString &cString::operator/=(char *s)
+{
+    cString tmp(s);
+    return *this/=tmp;
+}
+
+cString &cString::operator/=(int num)
+{
+    cString tmp(num);
+    return *this/=tmp;
 }
 
 cString &cString::getstr(std::istream &fin=std::cin, int delim='\n',
                          size_t bytes=~(size_t)0)
 {
     char c;
-    str=srealloc(str, len+1, 1);
+    srealloc(1);
     for(len=0; (c=fin.get())!=delim && !fin.eof() && len<bytes; str[len++]=c)
-        str=srealloc(str, len+1, len+2);
+        srealloc(len+2);
     str[len]='\0';
     return *this;
 }
@@ -422,35 +438,11 @@ cString &cString::revstr()
     size_t i, j;
     char tmp;
     for(i=0, j=len; i<j; ++i){
-        tmp   =str[i];
+        tmp=str[i];
         str[i]=str[--j];
         str[j]=tmp;
     }
     return *this;
-}
-
-char &cString::operator[](size_t ind)
-{
-    static char enull;
-    if(ind<len) return str[ind];
-    return enull='\0';
-}
-
-char *cString::extract() throw(std::bad_alloc)
-{
-    char *cpys, *cpyd, *ret;
-    if(!str) return NULL;
-    ret=new char[len+1];
-    cpys=str;
-    cpyd=ret;
-    while((*cpyd++=*cpys++));
-    return ret;
-}
-
-int cString::atoi()
-{
-    if(!str) return 0;
-    return ::atoi(str);
 }
 
 std::istream &operator>>(std::istream &fin, cString &ob)
