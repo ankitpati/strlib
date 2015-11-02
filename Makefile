@@ -1,5 +1,5 @@
 # Makefile
-# Makefile for strlib.hpp and strlib.cpp
+# Makefile for String Handling Library Demonstration
 #
 # Copyright 2013 Ankit Pati <ankitpati@gmail.com>
 #
@@ -19,11 +19,11 @@
 CC=c++
 CFLAGS=-c
 LDFLAGS=
-SOURCES=strlib.cpp strlib.hpp
+SOURCES=src/demo.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=strlib
+EXECUTABLE=strlib-demo
 
-all: $(SOURCES) $(EXECUTABLE) clean done
+all: $(SOURCES) $(EXECUTABLE) done
 
 $(EXECUTABLE): $(OBJECTS)
 	@echo Linking...
@@ -35,7 +35,8 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	@echo Cleaning...
-	rm -rf *o
+	find . -name "*.o" -type f -delete
+	find . -name "*.gch" -type f -delete
 	strip $(EXECUTABLE)
 
 done:

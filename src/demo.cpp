@@ -1,4 +1,4 @@
-/* strlib.cpp */
+/* demo.cpp */
 /* Demonstration of strlib.hpp
  *
  * Copyright 2013 Ankit Pati <ankitpati@gmail.com>
@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include <cstdlib>
-#include "strlib.hpp"
+#include "libs/strlib.hpp"
 using namespace std;
 
 int main()
@@ -107,4 +107,4 @@ int main()
     cin.get();
     return 0;
 }
-/* end of strlib.cpp */
+/* end of demo.cpp */
