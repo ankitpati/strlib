@@ -29,28 +29,80 @@
 class cString{
     char *str;
     size_t len;
+
     void srealloc(size_t) throw(std::bad_alloc);
 public:
-    cString(), cString(const cString &), cString(char *), cString(int),
-    ~cString(), operator char *() throw(std::bad_alloc), operator int();
-    void  operator~ ();
+     cString(               ),
+     cString(const cString &),
+     cString(char *         ),
+     cString(int            ),
+    ~cString(               ),
+    operator char *(        ) const throw(std::bad_alloc),
+    operator int   (        ) const;
+
+    void operator~ ();
+
     char &operator[](size_t);
-    bool operator==(const cString &), operator==(char *), operator==(int),
-         operator!=(const cString &), operator!=(char *), operator!=(int),
-         operator<=(const cString &), operator<=(char *), operator<=(int),
-         operator>=(const cString &), operator>=(char *), operator>=(int),
-         operator< (const cString &), operator< (char *), operator< (int),
-         operator> (const cString &), operator> (char *), operator> (int),
-         operator! ();
-    cString &operator =(const cString &), &operator =(char *), &operator =(int),
-             operator+ (const cString &),  operator+ (char *),  operator+ (int),
-            &operator+=(const cString &), &operator+=(char *), &operator+=(int),
-             operator- (const cString &),  operator- (char *),  operator- (int),
-            &operator-=(const cString &), &operator-=(char *), &operator-=(int),
-             operator/ (const cString &),  operator/ (char *),  operator/ (int),
-            &operator/=(const cString &), &operator/=(char *), &operator/=(int),
-            &getstr(std::istream &, int, size_t), &revstr();
+
+    bool operator==(const cString &) const,
+         operator==(char *         ) const,
+         operator==(int            ) const,
+         operator!=(const cString &) const,
+         operator!=(char *         ) const,
+         operator!=(int            ) const,
+         operator<=(const cString &) const,
+         operator<=(char *         ) const,
+         operator<=(int            ) const,
+         operator>=(const cString &) const,
+         operator>=(char *         ) const,
+         operator>=(int            ) const,
+         operator< (const cString &) const,
+         operator< (char *         ) const,
+         operator< (int            ) const,
+         operator> (const cString &) const,
+         operator> (char *         ) const,
+         operator> (int            ) const,
+         operator! (               ) const;
+
+    cString &operator =(const cString &),
+            &operator =(char *         ),
+            &operator =(int            ),
+             operator+ (const cString &),
+             operator+ (char *         ),
+             operator+ (int            ),
+            &operator+=(const cString &),
+            &operator+=(char *         ),
+            &operator+=(int            ),
+             operator- (const cString &),
+             operator- (char *         ),
+             operator- (int            ),
+            &operator-=(const cString &),
+            &operator-=(char *         ),
+            &operator-=(int            ),
+             operator/ (const cString &),
+             operator/ (char *         ),
+             operator/ (int            ),
+            &operator/=(const cString &),
+            &operator/=(char *         ),
+            &operator/=(int            ),
+            &getstr(std::istream &, int, size_t),
+            &revstr();
+
+    friend bool operator==(char *, const cString &),
+                operator==(int   , const cString &),
+                operator!=(char *, const cString &),
+                operator!=(int   , const cString &),
+                operator<=(char *, const cString &),
+                operator<=(int   , const cString &),
+                operator>=(char *, const cString &),
+                operator>=(int   , const cString &),
+                operator< (char *, const cString &),
+                operator< (int   , const cString &),
+                operator> (char *, const cString &),
+                operator> (int   , const cString &);
+
     friend std::istream &operator>>(std::istream &fin , const cString &ob);
+
     friend std::ostream &operator<<(std::ostream &fout, const cString &ob);
 };
 
@@ -125,7 +177,7 @@ cString::~cString()
     if(str) delete []str;
 }
 
-cString::operator char *() throw(std::bad_alloc)
+cString::operator char *() const throw(std::bad_alloc)
 {
     char *cpys, *cpyd, *ret;
     if(!str) return NULL;
@@ -136,7 +188,7 @@ cString::operator char *() throw(std::bad_alloc)
     return ret;
 }
 
-cString::operator int()
+cString::operator int() const
 {
     if(!str) return 0;
     return ::atoi(str);
@@ -156,7 +208,7 @@ char &cString::operator[](size_t ind)
     return enull='\0';
 }
 
-bool cString::operator==(const cString &ob)
+bool cString::operator==(const cString &ob) const
 {
     size_t n;
     if(!str || !ob.str) return false;
@@ -166,36 +218,36 @@ bool cString::operator==(const cString &ob)
     return true;
 }
 
-bool cString::operator==(char *s)
+bool cString::operator==(char *s) const
 {
     cString tmp(s);
     return *this==tmp;
 }
 
-bool cString::operator==(int num)
+bool cString::operator==(int num) const
 {
     cString tmp(num);
     return *this==tmp;
 }
 
-bool cString::operator!=(const cString &ob)
+bool cString::operator!=(const cString &ob) const
 {
     return !(*this==ob);
 }
 
-bool cString::operator!=(char *s)
+bool cString::operator!=(char *s) const
 {
     cString tmp(s);
     return *this!=tmp;
 }
 
-bool cString::operator!=(int num)
+bool cString::operator!=(int num) const
 {
     cString tmp(num);
     return *this!=tmp;
 }
 
-bool cString::operator<(const cString &ob)
+bool cString::operator<(const cString &ob) const
 {
     size_t n;
     if(!str || !ob.str) return false;
@@ -205,70 +257,70 @@ bool cString::operator<(const cString &ob)
     return false;
 }
 
-bool cString::operator<(char *s)
+bool cString::operator<(char *s) const
 {
     cString tmp(s);
     return *this<tmp;
 }
 
-bool cString::operator<(int num)
+bool cString::operator<(int num) const
 {
     cString tmp(num);
     return *this<tmp;
 }
 
-bool cString::operator>(const cString &ob)
+bool cString::operator>(const cString &ob) const
 {
     return *this!=ob && !(*this<ob);
 }
 
-bool cString::operator>(char *s)
+bool cString::operator>(char *s) const
 {
     cString tmp(s);
     return *this>tmp;
 }
 
-bool cString::operator>(int num)
+bool cString::operator>(int num) const
 {
     cString tmp(num);
     return *this>tmp;
 }
 
-bool cString::operator<=(const cString &ob)
+bool cString::operator<=(const cString &ob) const
 {
     return !(*this>ob);
 }
 
-bool cString::operator<=(char *s)
+bool cString::operator<=(char *s) const
 {
     cString tmp(s);
     return *this<=tmp;
 }
 
-bool cString::operator<=(int num)
+bool cString::operator<=(int num) const
 {
     cString tmp(num);
     return *this<=tmp;
 }
 
-bool cString::operator>=(const cString &ob)
+bool cString::operator>=(const cString &ob) const
 {
     return !(*this<ob);
 }
 
-bool cString::operator>=(char *s)
+bool cString::operator>=(char *s) const
 {
     cString tmp(s);
     return *this>=tmp;
 }
 
-bool cString::operator>=(int num)
+bool cString::operator>=(int num) const
 {
     cString tmp(num);
     return *this>=tmp;
 }
 
-bool cString::operator!()
+bool cString::operator!() const
 {
     return str?false:true;
 }
@@ -440,6 +492,66 @@ cString &cString::revstr()
         str[j]=tmp;
     }
     return *this;
+}
+
+bool operator==(char *s, const cString &ob)
+{
+    return ob==s;
+}
+
+bool operator==(int num, const cString &ob)
+{
+    return ob==num;
+}
+
+bool operator!=(char *s, const cString &ob)
+{
+    return ob!=s;
+}
+
+bool operator!=(int num, const cString &ob)
+{
+    return ob!=num;
+}
+
+bool operator<(char *s, const cString &ob)
+{
+    return ob<s;
+}
+
+bool operator<(int num, const cString &ob)
+{
+    return ob<num;
+}
+
+bool operator>(char *s, const cString &ob)
+{
+    return ob>s;
+}
+
+bool operator>(int num, const cString &ob)
+{
+    return ob>num;
+}
+
+bool operator<=(char *s, const cString &ob)
+{
+    return ob<=s;
+}
+
+bool operator<=(int num, const cString &ob)
+{
+    return ob<=num;
+}
+
+bool operator>=(char *s, const cString &ob)
+{
+    return ob>=s;
+}
+
+bool operator>=(int num, const cString &ob)
+{
+    return ob>=num;
 }
 
 std::istream &operator>>(std::istream &fin, cString &ob)
